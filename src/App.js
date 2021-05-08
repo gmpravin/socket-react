@@ -1,24 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import socketIOClient from "socket.io-client";
+const ENDPOINT = "http://127.0.0.1:4001";
 
 function App() {
+  const [response, setResponse] = useState("");
+
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+
+    const bookingId = [111, 222, 333, 444, 555];
+
+    setInterval(() => {
+
+      socket.emit("sendLocation", { lat: "633763", long: "884664", bookingId: Math.floor(Math.random() * bookingId.length) });
+
+    }, 2000);
+
+    socket.on("getLocation", data => {
+      console.log(data.data.bookingId,"****");
+      if (data.data.bookingId == 1) {
+        setResponse(data);
+      }
+    })
+
+
+
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <p>
+      Location {JSON.stringify(response)}
+    </p>
   );
 }
 
